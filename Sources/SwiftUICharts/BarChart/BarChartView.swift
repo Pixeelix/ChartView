@@ -60,9 +60,18 @@ public struct BarChartView : View {
                             .font(.headline)
                             .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.textColor : self.style.textColor)
                     }else{
-                        Text("\(self.currentValue, specifier: self.valueSpecifier)")
-                            .font(.headline)
-                            .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.textColor : self.style.textColor)
+                        HStack {
+                            Text("\(self.currentValue, specifier: self.valueSpecifier)")
+                                .font(.headline)
+                                .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.textColor : self.style.textColor)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            
+                            Text(self.getCurrentValue()!.0)
+                                .font(.headline)
+                                .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.textColor : self.style.textColor)
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+                        }
+                        .frame(maxWidth: .infinity)
                     }
                     if(self.formSize == ChartForm.large && self.legend != nil && !showValue) {
                         Text(self.legend!)
@@ -72,32 +81,48 @@ public struct BarChartView : View {
                             .animation(.easeOut)
                     }
                     Spacer()
-                    self.cornerImage
-                        .imageScale(.large)
-                        .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.legendTextColor : self.style.legendTextColor)
+//                    self.cornerImage
+//                        .imageScale(.large)
+//                        .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.legendTextColor : self.style.legendTextColor)
                 }.padding()
                 BarChartRow(data: data.points.map{$0.1},
                             accentColor: self.colorScheme == .dark ? self.darkModeStyle.accentColor : self.style.accentColor,
                             gradient: self.colorScheme == .dark ? self.darkModeStyle.gradientColor : self.style.gradientColor,
                             touchLocation: self.$touchLocation)
                 if self.legend != nil  && self.formSize == ChartForm.medium && !self.showLabelValue{
-                    Text(self.legend!)
-                        .font(.headline)
-                        .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.legendTextColor : self.style.legendTextColor)
-                        .padding()
+//                    Text(self.legend!)
+//                        .font(.headline)
+//                        .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.legendTextColor : self.style.legendTextColor)
+//                        .padding()
+                                
                 }else if (self.data.valuesGiven && self.getCurrentValue() != nil) {
-                    LabelView(arrowOffset: self.getArrowOffset(touchLocation: self.touchLocation),
-                              title: .constant(self.getCurrentValue()!.0))
-                        .offset(x: self.getLabelViewOffset(touchLocation: self.touchLocation), y: -6)
-                        .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.legendTextColor : self.style.legendTextColor)
+//                    LabelView(arrowOffset: self.getArrowOffset(touchLocation: self.touchLocation),
+//                              title: .constant(self.getCurrentValue()!.0))
+//                        .offset(x: self.getLabelViewOffset(touchLocation: self.touchLocation), y: -6)
+//                        .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.legendTextColor : self.style.legendTextColor)
+                    let timesArray = ["00:00", "04:00", "08:00", "12:00", "16:00", "20:00", "23:00" ]
+                    HStack {
+                        ForEach(timesArray, id: \.self) {
+                            Text($0)
+                                .scaledToFit()
+                                .minimumScaleFactor(0.01)
+                                .font(.system(size: 12, weight: .semibold, design: .default))
+                                .foregroundColor(Color("grayWhiteText"))
+                                .frame(maxWidth: .infinity)
+                        }
+                    }
+                    .padding(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
+                    .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: 20)
+                    .offset(y: -5)
                 }
                 
             }
-        }.frame(minWidth:self.formSize.width,
+        }
+        .frame(minWidth:self.formSize.width,
                 maxWidth: self.isFullWidth ? .infinity : self.formSize.width,
                 minHeight:self.formSize.height,
                 maxHeight:self.formSize.height)
-            .gesture(DragGesture()
+        .gesture(DragGesture()
                 .onChanged({ value in
                     self.touchLocation = value.location.x/self.formSize.width
                     self.showValue = true
@@ -151,10 +176,7 @@ public struct BarChartView : View {
 #if DEBUG
 struct ChartView_Previews : PreviewProvider {
     static var previews: some View {
-        BarChartView(data: TestData.values ,
-                     title: "Model 3 sales",
-                     legend: "Quarterly",
-                     valueSpecifier: "%.0f")
+        BarChartView(data: TestData.values, title: "21.12", legend: "Quarterly", form: ChartForm.extraLarge, valueSpecifier: "%.4f €/kWh")
     }
 }
 #endif
